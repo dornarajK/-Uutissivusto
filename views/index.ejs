@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+
+  <main>
+    <header>
+      <h1>Satuvaltakunnan tarinat</h1>
+      <h2>Uutisia lunotusta maasta</h2>
+    </header>
+
+    <div class="saa">
+      <h5 id="vik"></h5>
+    </div>
+    <!-- ? viikkot -->
+    <section class="viikko-saa">
+
+      <% if (dataSaa && dataSaa.saaTila && Array.isArray(dataSaa.saaTila.saa)) { %>
+        <% dataSaa.saaTila.saa.forEach(saa=> { %>
+          <div class="paiva">
+            <p class="pvm">Viikon sää: <%= saa.vko %>
+            </p>
+
+            <p class="pvm">
+              <%= (()=> {
+                const date = new Date(saa.pvm);
+                const pvm = ("0" + date.getDate()).slice(-2);
+                const kuukausi = ("0" + (date.getMonth() + 1)).slice(-2);
+                const vuosi = date.getFullYear();
+                return `${pvm}.${kuukausi}.${vuosi}`;
+                })() %>
+            </p>
+
+            <p class="lampotila">
+              <%= saa.lampotila %>°C
+            </p>
+            <h5>Säätila:</h5>
+            <p>
+              <%= saa.saatila %>
+            </p>
+            <h5>Tuulennopeus:</h5>
+            <p>
+              <%= saa.tuulennopeus %> m/s
+            </p>
+          </div>
+          <hr>
+          <% }); %>
+            <% } else { %>
+              <p>No weather data available.</p>
+              <% } %>
+    </section>
+
+    <!-- ? Blogit -->
+
+    <section class="tiedostot">
+      <div class="uutiset">
+        <div class="uutisetSisalto">
+          <% sisalto.forEach(uutinen=> { %>
+            <h1 class="otsikko">
+              <%= uutinen.otsikko %>
+            </h1>
+            <p class="sisalto">
+              <%= uutinen.sisalto %>
+            </p>
+            <% }) %>
+        </div>    
+      </div>
+
+      <div class="tiedot" id="ti">
+        <div class="kot">Uusimmat uutiset</div>
+        <div id="uutiset" class="uutiset">
+
+          <% otsikot.forEach(otsikko=> { %>
+            <div class="uutiset">
+              <%= otsikko.otsikko %>
+            </div>
+            <hr>
+            <% }) %>
+        </div>
+
+        <div class="kot" id="kot2">Vierailevat kirjoittajat</div>
+        <div id='blogdata'>
+          <%- htmlBlog %>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
+    </body>
+
+    </html>
