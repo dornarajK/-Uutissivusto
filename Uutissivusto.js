@@ -16,22 +16,37 @@ app.use('/inc', express.static('includes'));
 
 app.get('/', async (req, res) => {
     try {
-        const response = await fetch('http://localhost:5000/blogitJulkaistu');
-        if (!response.ok) {
-            throw new Error(`Failed to fetch blog data: ${response.status} ${response.statusText}`)
+        let dataBlog = [];
+        try {
+            const response = await fetch('http://localhost:5000/blogitJulkaistu');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch blog data: ${response.status} ${response.statusText}`)
+            }
+            dataBlog = await response.json();
+        } catch (err) {
+            console.error(err);
+            dataBlog = [{ blogin_nimi: 'Ei löydy', otsikko: 'Ei löydy', julkaisuaika: new Date() }];
         }
-        const dataBlog = await response.json();
 
-        const saa = await fetch('http://localhost:5005/saa/1');
-        if (!saa.ok) {
-            throw new Error(`Failed to fetch weather data: ${saa.status} ${saa.statusText}`);
+
+        let dataSaa = null
+        try {
+
+            const saa = await fetch('http://localhost:5005/saa/1');
+            if (!saa.ok) {
+                throw new Error(`Failed to fetch weather data: ${saa.status} ${saa.statusText}`);
+            }
+
+            const saaText = await saa.text()
+            console.log(saaText);
+            const parser = new XMLParser();
+            dataSaa = parser.parse(saaText);
+
+        } catch (err) {
+            console.error(err);
+            dataSaa = { saaTila: { saa: [{ pvm: new Date(), lampotila: 'Ei löydy', saatila: 'Ei löydy', tuulennopeus: 'Ei löydy' }] } };
         }
 
-
-        const saaText = await saa.text()
-        console.log(saaText);
-        const parser = new XMLParser();
-        const dataSaa = parser.parse(saaText);
         console.log(dataSaa);
 
         const htmlBlog = dataBlog.map(item => {
